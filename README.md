@@ -6,6 +6,8 @@ Store commands, code blocks, URLs and text fragments in categorised groups. Retr
 
 ![Snippet Launcher screenshot](docs/screenshot.png)
 
+![Snippet Launcher screenshot](docs/screenshot.png)
+
 ---
 
 ## Features
