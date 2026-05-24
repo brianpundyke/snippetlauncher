@@ -2,9 +2,7 @@
 
 A keyboard-driven snippet manager for Linux desktops — works great on **KDE Plasma** and **GNOME**.
 
-Store commands, code blocks, URLs and text fragments in categorised groups. Retrieve and paste them into any window via a clean Qt GUI or a Rofi quick-picker triggered by a global hotkey.
-
-![Snippet Launcher screenshot](docs/screenshot.png)
+Store commands, code blocks, URLs and text fragments in categorised groups. Retrieve and paste them via a clean Qt GUI or a lightweight quick-pick popup triggered by a global hotkey.
 
 ![Snippet Launcher screenshot](docs/screenshot.png)
 
@@ -16,9 +14,12 @@ Store commands, code blocks, URLs and text fragments in categorised groups. Retr
 - 🔍 Live search across title, body and description
 - 🖱️ Three paste modes: clipboard, middle-click, and copy-and-close
 - 🔗 URLs in snippets are automatically detected and clickable
-- ⌨️ Rofi quick-picker for hotkey-triggered access without opening the GUI
+- ⌨️ Keyboard-driven quick-pick popup for hotkey-triggered access without opening the full GUI
 - 💾 Local SQLite database — your data stays on your machine
 - 🎨 Inherits your desktop theme (KDE Plasma and GNOME)
+- ⌨️ Keyboard shortcuts for all common actions (Ctrl+C, Ctrl+M, Ctrl+Enter, Ctrl+E)
+- 🖱️ Right-click context menu on snippets
+- 💬 Hover tooltips show snippet description or body preview
 
 ---
 
@@ -27,7 +28,6 @@ Store commands, code blocks, URLs and text fragments in categorised groups. Retr
 - Python 3.11+
 - `python3-venv`
 - `wl-clipboard` (Wayland) or `xclip` (X11) for clipboard support
-- `rofi` for the quick-picker hotkey launcher (optional)
 
 Install system dependencies on Ubuntu/Debian/Pop!_OS:
 
@@ -38,9 +38,6 @@ sudo apt install python3-full python3-venv
 # Clipboard (pick one based on your session)
 sudo apt install wl-clipboard     # Wayland (KDE Plasma, GNOME on Wayland)
 sudo apt install xclip            # X11
-
-# Optional — for Rofi quick-picker
-sudo apt install rofi
 ```
 
 ---
@@ -60,7 +57,8 @@ The installer will:
 - Create a virtual environment and install Python packages
 - Seed example snippets to get you started
 - Create a `snippetlauncher` command in `~/.local/bin/`
-- Register the app in your desktop's application menu
+- Register the app in your desktop application menu
+- Add `~/.local/bin` to your PATH if needed
 
 No `sudo` required.
 
@@ -76,6 +74,23 @@ Launch from your app menu, or from the terminal:
 snippetlauncher ui
 ```
 
+### Quick-pick popup
+
+A lightweight keyboard-driven popup for fast snippet access without opening the full GUI:
+
+```bash
+snippetlauncher launch                        # all snippets
+snippetlauncher launch --category supabase    # filtered to a category
+snippetlauncher launch --primary              # copies to primary selection (middle-click paste)
+```
+
+In the popup:
+- **Type** to filter snippets instantly
+- **↑ ↓** to navigate
+- **Enter** to copy to clipboard
+- **Double-click** to copy to primary selection (middle-click paste)
+- **Escape** to dismiss
+
 ### CLI
 
 ```bash
@@ -90,12 +105,16 @@ snippetlauncher category list                 # list categories
 snippetlauncher category add "kubernetes"     # add a category
 ```
 
-### Rofi quick-picker
+### Keyboard shortcuts (GUI)
 
-```bash
-snippetlauncher launch                        # all snippets
-snippetlauncher launch --category supabase    # filtered
-```
+| Action | Shortcut |
+|---|---|
+| Add snippet | Ctrl+N |
+| Edit snippet | Ctrl+E |
+| Copy to clipboard | Ctrl+C |
+| Middle-click paste | Ctrl+M |
+| Copy & close | Ctrl+Enter |
+| Delete snippet | Delete |
 
 ---
 
@@ -118,11 +137,12 @@ Settings → Keyboard → Custom Shortcuts → Add
 ## Uninstall
 
 ```bash
-cd snippetlauncher
-./uninstall.sh
+bash ~/.local/share/snippetlauncher/uninstall.sh
 ```
 
 Your snippet database is preserved by default. The uninstaller will ask before deleting it.
+
+If the app was pinned to your KDE Plasma panel, right-click the orphaned icon and select **Unpin from Task Manager**.
 
 ---
 
@@ -131,7 +151,6 @@ Your snippet database is preserved by default. The uninstaller will ask before d
 - [ ] Custom app icon
 - [ ] Import/export (JSON, CSV)
 - [ ] Flatpak packaging for Flathub
-- [ ] `anyrun` plugin as Rofi alternative
 - [ ] Tag filtering in the GUI sidebar
 
 ---
