@@ -156,7 +156,20 @@ chmod +x "$BIN_DIR/snippetlauncher"
 success "Launcher created at $BIN_DIR/snippetlauncher"
 
 # -----------------------------------------------------------------------------
-# 10. Create .desktop file
+# 10. Create hotkey launcher script
+# -----------------------------------------------------------------------------
+info "Creating hotkey launcher script..."
+cat > "$BIN_DIR/snippetlauncher-launch" << LAUNCHEOF
+#!/bin/bash
+cd "$INSTALL_DIR"
+source .venv/bin/activate
+exec python cli.py launch
+LAUNCHEOF
+chmod +x "$BIN_DIR/snippetlauncher-launch"
+success "Hotkey launcher created at $BIN_DIR/snippetlauncher-launch"
+
+# -----------------------------------------------------------------------------
+# 11. Create .desktop file
 # -----------------------------------------------------------------------------
 info "Creating .desktop entry..."
 mkdir -p "$DESKTOP_DIR"
@@ -178,7 +191,7 @@ update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
 success ".desktop entry created"
 
 # -----------------------------------------------------------------------------
-# 11. Ensure ~/.local/bin is on PATH
+# 12. Ensure ~/.local/bin is on PATH
 # -----------------------------------------------------------------------------
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     info "Adding $BIN_DIR to PATH..."

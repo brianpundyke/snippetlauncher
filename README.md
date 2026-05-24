@@ -125,7 +125,20 @@ Register a hotkey in your desktop settings pointing to `snippetlauncher launch`:
 **KDE Plasma:**
 System Settings → Shortcuts → Custom Shortcuts → New → Command/URL
 - Trigger: e.g. `Meta+S`
-- Action: `snippetlauncher launch`
+- Action: `bash -c '/home/YOUR_USERNAME/.local/bin/snippetlauncher-launch'`
+
+First create the launcher script:
+```bash
+cat > ~/.local/bin/snippetlauncher-launch << 'EOF'
+#!/bin/bash
+cd ~/.local/share/snippetlauncher
+source .venv/bin/activate
+exec python cli.py launch
+EOF
+chmod +x ~/.local/bin/snippetlauncher-launch
+```
+
+Note: KDE shortcuts require `bash -c` and the full path — `snippetlauncher launch` alone will not work.
 
 **GNOME:**
 Settings → Keyboard → Custom Shortcuts → Add
