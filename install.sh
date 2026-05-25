@@ -31,6 +31,15 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 # -----------------------------------------------------------------------------
+# 0. Check Git
+# -----------------------------------------------------------------------------
+info "Checking Git..."
+if ! command -v git &>/dev/null; then
+    error "Git not found. Install with: sudo apt install git"
+fi
+success "Git found"
+
+# -----------------------------------------------------------------------------
 # 1. Check Python 3.11+
 # -----------------------------------------------------------------------------
 info "Checking Python version..."
@@ -81,19 +90,33 @@ info "Checking clipboard tools..."
 SESSION="${XDG_SESSION_TYPE:-unknown}"
 if [ "$SESSION" = "wayland" ]; then
     if ! command -v wl-copy &>/dev/null; then
-        warn "wl-clipboard not found (needed for clipboard on Wayland)"
-        warn "Install with: sudo apt install wl-clipboard"
-        warn "Continuing install — clipboard features will not work until installed."
+        warn "wl-clipboard not found (required for clipboard on Wayland)"
+        read -p "  Install wl-clipboard now? [Y/n]: " INSTALL_WL
+        INSTALL_WL="${INSTALL_WL:-Y}"
+        if [[ "$INSTALL_WL" =~ ^[Yy]$ ]]; then
+            sudo apt install -y wl-clipboard
+            success "wl-clipboard installed"
+        else
+            warn "Skipping — clipboard features will not work until wl-clipboard is installed"
+            warn "Install later with: sudo apt install wl-clipboard"
+        fi
     else
-        success "wl-clipboard found (Wayland)"
+        success "wl-clipboard found (Wayland — required)"
     fi
 else
     if ! command -v xclip &>/dev/null && ! command -v xsel &>/dev/null; then
-        warn "xclip/xsel not found (needed for clipboard on X11)"
-        warn "Install with: sudo apt install xclip"
-        warn "Continuing install — clipboard features will not work until installed."
+        warn "xclip not found (required for clipboard on X11)"
+        read -p "  Install xclip now? [Y/n]: " INSTALL_XCLIP
+        INSTALL_XCLIP="${INSTALL_XCLIP:-Y}"
+        if [[ "$INSTALL_XCLIP" =~ ^[Yy]$ ]]; then
+            sudo apt install -y xclip
+            success "xclip installed"
+        else
+            warn "Skipping — clipboard features will not work until xclip is installed"
+            warn "Install later with: sudo apt install xclip"
+        fi
     else
-        success "Clipboard tool found (X11)"
+        success "Clipboard tool found (X11 — required)"
     fi
 fi
 
