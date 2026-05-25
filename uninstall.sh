@@ -6,6 +6,22 @@
 
 set -e
 
+# -----------------------------------------------------------------------------
+# Check we are running in a terminal, not double-clicked
+# -----------------------------------------------------------------------------
+if [ ! -t 0 ]; then
+    # Not running in a terminal — show a popup using kdialog or zenity
+    MSG="SnippetLauncher must be uninstalled from a terminal.\n\nOpen a terminal and run:\n\n    bash ~/.local/share/snippetlauncher/uninstall.sh"
+    if command -v kdialog &>/dev/null; then
+        kdialog --title "Snippet Launcher Uninstaller" --msgbox "$MSG"
+    elif command -v zenity &>/dev/null; then
+        zenity --info --title="Snippet Launcher Uninstaller" --text="$MSG" --width=400
+    elif command -v notify-send &>/dev/null; then
+        notify-send "Snippet Launcher" "To uninstall, open a terminal and run:\nbash ~/.local/share/snippetlauncher/uninstall.sh"
+    fi
+    exit 0
+fi
+
 INSTALL_DIR="$HOME/.local/share/snippetlauncher"
 BIN_DIR="$HOME/.local/bin"
 DESKTOP_DIR="$HOME/.local/share/applications"
