@@ -324,10 +324,10 @@ class MainWindow(QMainWindow):
         right_splitter = QSplitter(Qt.Orientation.Vertical)
 
         self.snippet_table = QTableWidget()
-        self.snippet_table.setColumnCount(4)
-        self.snippet_table.setHorizontalHeaderLabels(["ID", "Title", "Tags", "Uses"])
+        self.snippet_table.setColumnCount(3)
+        self.snippet_table.setHorizontalHeaderLabels(["Title", "Tags", "Uses"])
         self.snippet_table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeMode.Stretch)
+            0, QHeaderView.ResizeMode.Stretch)
         self.snippet_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.snippet_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.snippet_table.verticalHeader().setVisible(False)
@@ -350,6 +350,8 @@ class MainWindow(QMainWindow):
 
         right_splitter.setStretchFactor(0, 2)
         right_splitter.setStretchFactor(1, 1)
+        right_splitter.setHandleWidth(6)
+        right_splitter.setStyleSheet("QSplitter::handle { background: palette(mid); border-radius: 3px; }")
         splitter.addWidget(right_splitter)
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
@@ -462,7 +464,6 @@ class MainWindow(QMainWindow):
         self.snippet_table.setRowCount(len(snippets))
         for row, s in enumerate(snippets):
             tags = ", ".join(t.name for t in s.tags)
-            id_item    = QTableWidgetItem(str(s.id))
             title_item = QTableWidgetItem(s.title)
             tags_item  = QTableWidgetItem(tags)
             uses_item  = QTableWidgetItem(str(s.use_count))
@@ -470,17 +471,15 @@ class MainWindow(QMainWindow):
             # Tooltip: show description if set, otherwise first line of body
             tooltip = s.description.strip() if s.description and s.description.strip() \
                       else s.body.splitlines()[0][:100]
-            for item in (id_item, title_item, tags_item, uses_item):
+            for item in (title_item, tags_item, uses_item):
                 item.setToolTip(tooltip)
 
-            self.snippet_table.setItem(row, 0, id_item)
-            self.snippet_table.setItem(row, 1, title_item)
-            self.snippet_table.setItem(row, 2, tags_item)
-            self.snippet_table.setItem(row, 3, uses_item)
+            self.snippet_table.setItem(row, 0, title_item)
+            self.snippet_table.setItem(row, 1, tags_item)
+            self.snippet_table.setItem(row, 2, uses_item)
 
-        self.snippet_table.setColumnWidth(0, 45)
-        self.snippet_table.setColumnWidth(2, 160)
-        self.snippet_table.setColumnWidth(3, 45)
+        self.snippet_table.setColumnWidth(1, 160)
+        self.snippet_table.setColumnWidth(2, 45)
 
         self.status.showMessage(
             f"{len(snippets)} snippet{'s' if len(snippets) != 1 else ''}")
