@@ -27,7 +27,8 @@ Store commands, code blocks, URLs and text fragments in categorised groups. Retr
 
 - Python 3.11+
 - `python3-venv`
-- `wl-clipboard` (Wayland) or `xclip` (X11) for clipboard support
+- `wl-clipboard`
+- `git` *(optional — only needed if cloning)* (Wayland) or `xclip` (X11) for clipboard support
 
 Install system dependencies on Ubuntu/Debian/Pop!_OS:
 
@@ -44,9 +45,20 @@ sudo apt install xclip            # X11
 
 ## Installation
 
+**Option 1 — with Git:**
 ```bash
 git clone https://github.com/brianpundyke/snippetlauncher.git
 cd snippetlauncher
+chmod +x install.sh
+./install.sh
+```
+
+**Option 2 — without Git (download ZIP):**
+1. Go to https://github.com/brianpundyke/snippetlauncher
+2. Click the green **Code** button → **Download ZIP**
+3. Extract the zip, then:
+```bash
+cd snippetlauncher-main
 chmod +x install.sh
 ./install.sh
 ```
