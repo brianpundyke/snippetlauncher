@@ -25,6 +25,9 @@ from db.models import init_db, get_session
 import db.repository as repo
 from paste.paster import copy_to_clipboard
 
+# Define the application version string here
+__version__ = "1.0.1"
+
 
 # ---------------------------------------------------------------------------
 # Add / Edit Snippet Dialog
@@ -271,7 +274,9 @@ class MainWindow(QMainWindow):
         self._search_timer = QTimer()
         self._search_timer.setSingleShot(True)
         self._search_timer.timeout.connect(self._refresh_snippets)
-        self.setWindowTitle("Snippet Launcher")
+        
+        # Include version directly in the Window Title bar
+        self.setWindowTitle(f"Snippet Launcher (v{__version__})")
         self.setMinimumSize(860, 540)
         self._build_ui()
         self._build_shortcuts()
@@ -359,6 +364,11 @@ class MainWindow(QMainWindow):
 
         self.status = QStatusBar()
         self.setStatusBar(self.status)
+
+        # Add a permanent version indicator widget to the far right of the status bar
+        self.version_label = QLabel(f"v{__version__} ")
+        self.version_label.setStyleSheet("color: palette(dark); font-size: 11px;")
+        self.status.addPermanentWidget(self.version_label)
 
     def _build_shortcuts(self):
         """Register keyboard shortcuts on the main window."""
@@ -455,14 +465,19 @@ class MainWindow(QMainWindow):
         self.cat_list.blockSignals(False)
         self.cat_list.setCurrentRow(restore_row)
 
-    def _refresh_snippets(self):
+    def _refresh_snippets(self, target_id: int | None = None):
         query    = self.search_box.text().strip()
         snippets = repo.search_snippets(
             self.session, query=query, category=self.current_category)
         self._snippets = snippets
 
         self.snippet_table.setRowCount(len(snippets))
+        
+        restore_row = 0
         for row, s in enumerate(snippets):
+            if target_id and s.id == target_id:
+                restore_row = row
+
             tags = ", ".join(t.name for t in s.tags)
             title_item = QTableWidgetItem(s.title)
             tags_item  = QTableWidgetItem(tags)
@@ -485,8 +500,8 @@ class MainWindow(QMainWindow):
             f"{len(snippets)} snippet{'s' if len(snippets) != 1 else ''}")
 
         if snippets:
-            self.snippet_table.selectRow(0)
-            self.detail.load(snippets[0])
+            self.snippet_table.selectRow(restore_row)
+            self.detail.load(snippets[restore_row])
         else:
             self.detail.load(None)
 
@@ -526,11 +541,12 @@ class MainWindow(QMainWindow):
         snippet = snippet or self._current_snippet()
         if not snippet:
             return
+        edited_id = snippet.id
         dlg = SnippetDialog(self, self.session, snippet=snippet)
         if dlg.exec() == QDialog.DialogCode.Accepted:
             self.session.expire_all()
             self._refresh_categories()
-            self._refresh_snippets()
+            self._refresh_snippets(target_id=edited_id)
 
     def _on_delete_snippet(self):
         snippet = self._current_snippet()
@@ -573,7 +589,7 @@ class MainWindow(QMainWindow):
         repo.record_use(self.session, snippet.id)
         copy_to_clipboard(snippet.body)
         self.status.showMessage(f"✓ Copied: {snippet.title}", 3000)
-        self._refresh_snippets()
+        self._refresh_snippets(target_id=snippet.id)
 
     def _on_primary(self, snippet=None):
         snippet = snippet or self._current_snippet()
@@ -587,7 +603,7 @@ class MainWindow(QMainWindow):
             self.showMinimized()
         else:
             self.status.showMessage(f"✗ {result.message}", 5000)
-        self._refresh_snippets()
+        self._refresh_snippets(target_id=snippet.id)
 
     def _on_copy_close(self, snippet=None):
         snippet = snippet or self._current_snippet()
@@ -599,7 +615,7 @@ class MainWindow(QMainWindow):
             self.showMinimized()
         else:
             self.status.showMessage(f"✗ {result.message}", 5000)
-        self._refresh_snippets()
+        self._refresh_snippets(target_id=snippet.id)
 
 
 # ---------------------------------------------------------------------------
